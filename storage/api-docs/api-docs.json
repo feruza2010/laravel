@@ -1,0 +1,1266 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Storages API",
+        "description": "Warehouse management system API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080/api"
+        }
+    ],
+    "paths": {
+        "/batches": {
+            "get": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "List all purchase batches",
+                "operationId": "5e9c3789425c79b8604916a3c286e23f",
+                "responses": {
+                    "200": {
+                        "description": "List of batches with items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "code": {
+                                                "type": "string",
+                                                "example": "BATCH-001"
+                                            },
+                                            "provider": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Ahmad Tea Co"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "storage": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Main Warehouse"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "product_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "qty": {
+                                                            "type": "integer",
+                                                            "example": 200
+                                                        },
+                                                        "remaining_qty": {
+                                                            "type": "integer",
+                                                            "example": 150
+                                                        },
+                                                        "purchase_price": {
+                                                            "type": "number",
+                                                            "example": 38000
+                                                        },
+                                                        "product": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Ahmad Earl Grey 500g"
+                                                                },
+                                                                "sale_price": {
+                                                                    "type": "number",
+                                                                    "example": 45000
+                                                                },
+                                                                "category_id": {
+                                                                    "type": "integer",
+                                                                    "example": 4
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/batches/purchase": {
+            "post": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Register a new purchase batch",
+                "operationId": "717a35c4641be200e357ce9de1628922",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "provider_id",
+                                    "storage_id",
+                                    "products"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "BATCH-001"
+                                    },
+                                    "provider_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "storage_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "qty": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "purchase_price": {
+                                                    "type": "number",
+                                                    "example": 38000
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Purchase recorded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Purchased successfully"
+                                        },
+                                        "batch_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "BATCH-001"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/batches/refund": {
+            "post": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Refund unsold products back to provider",
+                "operationId": "d8d9e99c86a59efa9219cee1d71cacfe",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "items"
+                                ],
+                                "properties": {
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "batch_item_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "qty": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Refund processed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Purchase refund processed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Batch not found"
+                    },
+                    "422": {
+                        "description": "Qty exceeds remaining stock or wrong batch"
+                    }
+                }
+            }
+        },
+        "/batches/profit": {
+            "get": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Get profit report for all batches",
+                "operationId": "fef8c684b213b92093afd5c2e438c014",
+                "responses": {
+                    "200": {
+                        "description": "Profit per batch",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "batch_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "provider": {
+                                                "type": "string",
+                                                "example": "Ahmad Tea Co"
+                                            },
+                                            "cost": {
+                                                "type": "number",
+                                                "example": 3800000
+                                            },
+                                            "revenue": {
+                                                "type": "number",
+                                                "example": 4500000
+                                            },
+                                            "profit": {
+                                                "type": "number",
+                                                "example": 700000
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "List all categories",
+                "operationId": "ead5fb1cf2a7453acb2e37928a1b1eaf",
+                "responses": {
+                    "200": {
+                        "description": "List of categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Category"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new category",
+                "operationId": "bb02f0320882db37f99574196577e446",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Black Tea"
+                                    },
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "provider_id": {
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "operationId": "f1b8af6e84bd52b9594d98bde748ebd6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Category deleted"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                }
+            }
+        },
+        "/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "List all orders with items and movements",
+                "operationId": "325fd3d55bbe9bb39645269928fa4983",
+                "responses": {
+                    "200": {
+                        "description": "Orders list"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create a new order (FIFO stock allocation)",
+                "operationId": "445bab4f7dc9ea6fcd54f286c0209478",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client_id",
+                                    "products"
+                                ],
+                                "properties": {
+                                    "client_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "qty": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Order created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Order created"
+                                        },
+                                        "order_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Insufficient stock or validation error"
+                    }
+                }
+            }
+        },
+        "/orders/refund": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Refund items from a client order",
+                "operationId": "092804e8c2d4e302d99a71651a289b49",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "items"
+                                ],
+                                "properties": {
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "order_item_id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "batch_item_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "qty": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Refund processed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Order refund processed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Refund qty exceeds refundable qty"
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "List all products",
+                "operationId": "c1ff6f862214e1896c59cfe0491ce0e8",
+                "responses": {
+                    "200": {
+                        "description": "List of products",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Create a new product",
+                "operationId": "399770d33fa4672f1216707d0e236763",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "category_id",
+                                    "sale_price"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmad Earl Grey 500g"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "sale_price": {
+                                        "type": "number",
+                                        "example": 45000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or name not unique"
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get a product",
+                "operationId": "b46f4aa73232d0368eee698a082342a4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Update a product",
+                "operationId": "1419d479f9340e30e67fe21a2ca525b7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmad Earl Grey 500g"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "sale_price": {
+                                        "type": "number",
+                                        "example": 45000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/products/available": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "List all products that have stock",
+                "operationId": "7db38fbc276e60d9d26ca0e5fab53faf",
+                "responses": {
+                    "200": {
+                        "description": "Products with available quantity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Ahmad Earl Grey 500g"
+                                            },
+                                            "category_name": {
+                                                "type": "string",
+                                                "example": "Black Tea"
+                                            },
+                                            "sale_price": {
+                                                "type": "number",
+                                                "example": 45000
+                                            },
+                                            "qty": {
+                                                "type": "integer",
+                                                "example": 120
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/remaining": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Remaining product quantities as of a given date",
+                "operationId": "87236ec30997c24b85a954035bedd0b3",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-06-01"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Remaining quantities per product at the given date",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Ahmad Earl Grey 500g"
+                                            },
+                                            "category_name": {
+                                                "type": "string",
+                                                "example": "Black Tea"
+                                            },
+                                            "sale_price": {
+                                                "type": "number",
+                                                "example": 45000
+                                            },
+                                            "remaining_qty": {
+                                                "type": "integer",
+                                                "example": 80
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/providers": {
+            "get": {
+                "tags": [
+                    "Providers"
+                ],
+                "summary": "List all providers",
+                "operationId": "ae4eea74746a75b8f2bdee3d07a49309",
+                "responses": {
+                    "200": {
+                        "description": "List of providers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Provider"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Providers"
+                ],
+                "summary": "Create a new provider",
+                "operationId": "22a88d5f1b1c596a5c71d037cfb380fb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmad Tea Co"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Provider created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Provider"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or name not unique"
+                    }
+                }
+            }
+        },
+        "/storages": {
+            "get": {
+                "tags": [
+                    "Storages"
+                ],
+                "summary": "List all storages",
+                "operationId": "9e00c674911dab8933adeb82c204dc9f",
+                "responses": {
+                    "200": {
+                        "description": "List of storages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Storage"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Storages"
+                ],
+                "summary": "Create a new storage",
+                "operationId": "6dc3e3855ead1ff134bb62a73f1d00c9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Yunusabad Warehouse"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Storage created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Storage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or name not unique"
+                    }
+                }
+            }
+        },
+        "/storages/{id}": {
+            "put": {
+                "tags": [
+                    "Storages"
+                ],
+                "summary": "Update a storage",
+                "operationId": "4588a05bb315bc285736bfdc095d4dc2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Main Warehouse"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Storage updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Storage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Storage not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Storages"
+                ],
+                "summary": "Delete a storage",
+                "operationId": "9a5077eba3c8482b7e77570dfcd0666c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Storage deleted"
+                    },
+                    "404": {
+                        "description": "Storage not found"
+                    }
+                }
+            }
+        },
+        "/storages/remaining": {
+            "get": {
+                "tags": [
+                    "Storages"
+                ],
+                "summary": "Get current remaining stock per storage",
+                "operationId": "1bbd2ec408e096629e5c118211681fec",
+                "responses": {
+                    "200": {
+                        "description": "Remaining stock per storage and product",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "storage_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "storage_name": {
+                                                "type": "string",
+                                                "example": "Main Warehouse"
+                                            },
+                                            "product_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "product_name": {
+                                                "type": "string",
+                                                "example": "Ahmad Earl Grey 500g"
+                                            },
+                                            "qty": {
+                                                "type": "integer",
+                                                "example": 85
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoryChild": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Earl Grey"
+                    },
+                    "parent_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "children": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryChild"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Category": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ahmad Tea"
+                    },
+                    "parent_id": {
+                        "type": "integer",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "provider_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "provider": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Ahmad Tea Co"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "children": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryChild"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Provider": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ahmad Tea Co"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Storage": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Main Warehouse"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Product": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ahmad Earl Grey 500g"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "sale_price": {
+                        "type": "number",
+                        "example": 45000
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Batches",
+            "description": "Batches"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
+        },
+        {
+            "name": "Orders",
+            "description": "Orders"
+        },
+        {
+            "name": "Products",
+            "description": "Products"
+        },
+        {
+            "name": "Providers",
+            "description": "Providers"
+        },
+        {
+            "name": "Storages",
+            "description": "Storages"
+        }
+    ]
+}
