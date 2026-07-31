@@ -23,17 +23,23 @@ class OrderService
             $sellingPrices       = Product::whereIn('id', $productIds)->pluck('sale_price', 'id');
             $batchItemsByProduct = BatchItem::whereIn('product_id', $productIds)
                 ->where('remaining_qty', '>', 0)
-                ->orderBy('batch_id')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->get()
                 ->groupBy('product_id');
-
-            $this->validateStock($neededQtys, $batchItemsByProduct);
 
             $order     = Order::create(['client_id' => $data['client_id']]);
             $movements = [];
 
             foreach ($neededQtys as $productId => $needed) {
+
+                $available = $batchItemsByProduct->get($productId, collect())->sum('remaining_qty');
+                if ($available < $needed) {
+                    throw ValidationException::withMessages([
+                        'products' => ["Product #{$productId}: requested {$needed}, available {$available}."],
+                    ]);
+                }
+
                 $orderItem = OrderItem::create([
                     'order_id'    => $order->id,
                     'product_id'  => $productId,
@@ -70,11 +76,22 @@ class OrderService
         DB::transaction(function () use ($data) {
 
             $refundMovements = [];
-            foreach ($data['items'] as $item) {
-                $batchItem = BatchItem::whereKey($item['batch_item_id'])
-                    ->lockForUpdate()
-                    ->firstOrFail();
+            $itemsByBatchItemId = collect($data['items'])->keyBy('batch_item_id');
+            $batchItemIds = $itemsByBatchItemId->keys()->all();
 
+            $batchItems = BatchItem::whereIn('id', $batchItemIds)
+                ->lockForUpdate()
+                ->get();
+
+            if ($batchItems->count() !== \count($batchItemIds)) {
+                throw ValidationException::withMessages([
+                    'items' => "Batch item not found.",
+                ]);
+            }
+
+            foreach ($batchItems as $batchItem) {
+
+                $item = $itemsByBatchItemId[$batchItem->id];
                 $refundable = InventoryMovement::where('order_item_id', $item['order_item_id'])
                     ->where('batch_item_id', $item['batch_item_id'])
                     ->whereIn('type', ['sale', 'refund'])
@@ -102,19 +119,6 @@ class OrderService
             
             InventoryMovement::insert($refundMovements);
         });
-    }
-
-    private function validateStock(Collection $neededQtys, Collection $batchItemsByProduct): void
-    {
-        foreach ($neededQtys as $productId => $needed) {
-            $available = $batchItemsByProduct->get($productId, collect())->sum('remaining_qty');
-
-            if ($available < $needed) {
-                throw ValidationException::withMessages([
-                    'products' => ["Product #{$productId}: requested {$needed}, available {$available}."],
-                ]);
-            }
-        }
     }
 
 

@@ -393,34 +393,6 @@
                 }
             }
         },
-        "/categories/{id}": {
-            "delete": {
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Delete a category",
-                "operationId": "f1b8af6e84bd52b9594d98bde748ebd6",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Category deleted"
-                    },
-                    "404": {
-                        "description": "Category not found"
-                    }
-                }
-            }
-        },
         "/orders": {
             "get": {
                 "tags": [
@@ -1023,32 +995,6 @@
                     },
                     "422": {
                         "description": "Validation error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Storages"
-                ],
-                "summary": "Delete a storage",
-                "operationId": "9a5077eba3c8482b7e77570dfcd0666c",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Storage deleted"
-                    },
-                    "404": {
-                        "description": "Storage not found"
                     }
                 }
             }

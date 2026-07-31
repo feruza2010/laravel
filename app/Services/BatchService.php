@@ -48,16 +48,27 @@ class BatchService
     public function refund(array $data): void
     {
         DB::transaction(function () use ($data) {
+            $itemsByBatchItemId = collect($data['items'])->keyBy('batch_item_id');
+            $batchItemIds = $itemsByBatchItemId->keys()->all();
+
+            $batchItems = BatchItem::whereIn('id', $batchItemIds)
+                ->lockForUpdate()
+                ->get();
+
+            if ($batchItems->count() !== \count($batchItemIds)) {
+                throw ValidationException::withMessages([
+                    'items' => 'Batch item not found.',
+                ]);
+            }
+
             $movements = [];
 
-            foreach ($data['items'] as $index => $item) {
-                $batchItem = BatchItem::where('id', $item['batch_item_id'])
-                    ->lockForUpdate()
-                    ->firstOrFail();
+            foreach ($batchItems as $batchItem) {
+                $item = $itemsByBatchItemId[$batchItem->id];
 
                 if ($item['qty'] > $batchItem->remaining_qty) {
                     throw ValidationException::withMessages([
-                        "items.$index.qty" => "Only {$batchItem->remaining_qty} items are available."
+                        'items' => "Only {$batchItem->remaining_qty} items are available.",
                     ]);
                 }
 
