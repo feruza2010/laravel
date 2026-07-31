@@ -23,6 +23,7 @@ docker compose exec app php artisan db:seed
 ```
 
 API base URL: `http://localhost:8080/api`
+Swagger UI: `http://localhost:8080/api/documentation`
 
 ## Database Connection
 
@@ -154,7 +155,7 @@ Response `200`:
 
 ---
 
-#### POST /api/orders — Create client order (FIFO batch assignment)
+#### POST /api/orders — Create client order 
 
 Backend automatically selects the oldest available batch per product.
 
